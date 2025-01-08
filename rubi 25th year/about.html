@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About CoastalGuard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"> <!-- Added Google Font -->
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif; /* Changed font for a better look */
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            color: #333; /* Ensure readability */
+        }
+
+        header {
+            background-color: #004466;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            line-height: 1.8;
+        }
+
+        h1, h2 {
+            color: #004466;
+            font-weight: 600;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>About CoastalGuard</h1>
+</header>
+
+<div class="container">
+    <h2>Our Mission</h2>
+    <p id="about-text"></p>
+</div>
+
+<footer>
+    <p>&copy; 2024 CoastalGuard - Safeguarding Coasts and Oceans</p>
+</footer>
+
+<script>
+    // JavaScript to dynamically insert the content into the page
+    const aboutText = `  
+        Nature's Forecast is your all-in-one solution for staying informed about current weather and environmental conditions. Designed for individuals in coastal regions, sailors, marine enthusiasts, and environmental organizations, our app offers a visual representation of your location's weather and nature.
+
+        Our platform provides real-time updates on weather patterns, with color-coded maps that depict local conditions such as temperature, wind speed, and precipitation. The interactive map allows you to easily view and track weather changes, ensuring you are always prepared for what nature has in store.
+
+        Whether you're out at sea or enjoying a day on the coast, Nature's Forecast equips you with the essential information you need for safe navigation and informed decision-making. Stay ahead of nature’s shifts with clear, accurate, and timely data right at your fingertips.
+    `;
+
+    document.getElementById('about-text').textContent = aboutText;
+</script>
+
+</body>
+</html>

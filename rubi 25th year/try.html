@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coastal Guard App</title>
+  <!-- Font Awesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <!-- Leaflet CSS for Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <!-- Custom CSS -->
+  <style>
+    /* General Styling */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    /* Navbar Styling */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #333;
+      padding: 10px;
+      color: white;
+      position: relative;
+    }
+    
+    .navbar-brand {
+      font-size: 24px;
+      color: white;
+      font-weight: bold;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+    }
+
+    .search-input {
+      background-color: #444;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      padding: 5px 10px;
+    }
+
+    .search-icon {
+      color: white;
+      font-size: 20px;
+      margin-left: 5px;
+    }
+
+    .menu-icon {
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100%;
+      background-color: white;
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
+      z-index: 2;
+    }
+
+    .sidebar.show {
+      transform: translateX(0);
+    }
+
+    .profile-section {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .profile-section i {
+      font-size: 50px;
+      color: #0066CC;
+    }
+
+    .profile-name {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    .menu-item {
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      color: #003366;
+      cursor: pointer;
+    }
+
+    .menu-item i {
+      margin-right: 15px;
+    }
+
+    .menu-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    /* Backdrop Styling */
+    .backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1;
+    }
+
+    .backdrop.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Map Styling */
+    #map {
+      height: 600px;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <i class="fas fa-bars menu-icon" id="menuToggle"></i>
+    <div class="search-container">
+      <input class="search-input" type="text" placeholder="search">
+      <i class="fas fa-search search-icon"></i>
+    </div>
+    <div class="navbar-brand">
+      Coastal Guard
+    </div>
+  </nav>
+
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="profile-section">
+      <i class="fas fa-user-circle"></i>
+      <p class="profile-name">Name</p>
+    </div>
+    <a href="signup.html" class="menu-item">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Sign up</span>
+    </a>
+    <a href="login.html" class="menu-item">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Login</span>
+    </a>
+    
+    <div class="menu-item">
+      <i class="fas fa-bell"></i>
+      <span>Notification</span>
+    </div>
+    <div class="menu-item">
+      <i class="fas fa-question-circle"></i>
+      <span>Help & Support</span>
+    </div>
+    <div class="menu-item">
+      <i class="fas fa-info-circle"></i>
+      <span>About</span>
+    </div>
+  </div>
+
+  <!-- Backdrop -->
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- Map Container -->
+  <div id="map"></div>
+
+  <!-- JavaScript for Sidebar and Map -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('backdrop');
+
+    // Toggle Sidebar
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('show');
+      backdrop.classList.toggle('show');
+    });
+
+    // Close Sidebar when clicking outside
+    backdrop.addEventListener('click', () => {
+      sidebar.classList.remove('show');
+      backdrop.classList.remove('show');
+    });
+
+    // Initialize the map and set its view to a chosen geographical location
+    var map = L.map('map').setView([40.7128, -74.0060], 5); // Example coordinates for the Northeastern U.S.
+
+    // Add a tile layer to the map
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Define colors for the impact levels
+    var colors = {
+      "Low": "green",
+      "Moderate": "yellow",
+      "High": "red",
+      "Very High": "purple"
+    };
+
+    // Example function to load data from an API (replace with your API URL and key)
+    fetch('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png??access_key=d9167a98c60f4a84b852053ec4e5ff74')
+      .then(response => response.json())
+      .then(data => {
+        // Process the data and add it to the map
+        data.features.forEach(feature => {
+          var impactLevel = feature.properties.impact_level;
+          var color = colors[impactLevel] || 'gray';
+
+          L.polygon(feature.geometry.coordinates, {
+            color: color,
+            fillOpacity: 0.7
+          }).addTo(map)
+          .bindPopup('Impact Level: ' + impactLevel);
+        });
+      })
+      .catch(error => console.error('Error fetching data:', error));
+  </script>
+
+</body>
+</html>

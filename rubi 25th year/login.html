@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Modal</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .error {
+            color: red;
+            font-size: 0.875em;
+        }
+        .success {
+            color: green;
+            font-size: 0.875em;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Brand</a>
+        <div class="ml-auto">
+            <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#loginModal">Login</button>
+        </div>
+    </nav>
+
+    <!-- Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Login</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control form-control-sm" id="username" placeholder="Enter your username">
+                            <small id="usernameError" class="error"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control form-control-sm" id="password" placeholder="Enter your password">
+                            <small id="passwordError" class="error"></small>
+                        </div>
+                        <button type="submit" class="btn btn-dark btn-sm">Login</button>
+                        <small id="formSuccess" class="success"></small>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- Custom JS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const usernameError = document.getElementById('usernameError');
+            const passwordError = document.getElementById('passwordError');
+            const formSuccess = document.getElementById('formSuccess');
+            
+            // Clear error messages when the user starts typing
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+
+            usernameInput.addEventListener('input', () => {
+                usernameError.textContent = ''; // Clear error message
+            });
+            passwordInput.addEventListener('input', () => {
+                passwordError.textContent = ''; // Clear error message
+            });
+
+            loginForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                let isValid = true;
+                formSuccess.textContent = ''; // Reset success message
+
+                // Validate Username or Email
+                const username = usernameInput.value;
+                if (username.trim() === '') {
+                    usernameError.textContent = 'Username or email is required.';
+                    isValid = false;
+                }
+
+                // Validate Password
+                const password = passwordInput.value;
+                if (password.length < 6) {
+                    passwordError.textContent = 'Password must be at least 6 characters long.';
+                    isValid = false;
+                }
+
+                if (isValid) {
+                    formSuccess.textContent = 'Login successful!';
+                    setTimeout(() => {
+                        $('#loginModal').modal('hide'); // Close modal after success
+                    }, 1000);
+                    loginForm.reset(); // Clear form fields
+                }
+            });
+        });
+    </script>
+</body>
+</html>

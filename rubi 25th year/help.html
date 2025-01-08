@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help and Support - CoastalGuard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #004466;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1, h2 {
+            color: #004466;
+        }
+        p, li {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #333;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+        }
+        .contact-form {
+            margin-top: 40px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #004466;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #006699;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            background-color: rgba(0, 0, 0, 0.4); /* Black background with opacity */
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Help and Support</h1>
+</header>
+
+<div class="container">
+    <h2>How Can We Help?</h2>
+    <p>Welcome to the CoastalGuard Help and Support page. Below you'll find answers to common questions and the option to reach out to our support team.</p>
+
+    <h3>Frequently Asked Questions</h3>
+    <ul id="faq-list"></ul>
+
+    <h3>Contact Support</h3>
+    <p>If you need further assistance, please fill out the form below and our support team will get back to you as soon as possible.</p>
+
+    <div class="contact-form">
+        <form id="support-form">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Your name" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Your email" required>
+
+            <label for="message">Message</label>
+            <textarea id="message" name="message" placeholder="Describe your issue or question" rows="5" required></textarea>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Button to open the Help Modal -->
+    <button id="helpBtn">Need More Help?</button>
+</div>
+
+<footer>
+    <p>&copy; 2025 Nature's Forecast - Safeguarding Coasts and Oceans</p>
+</footer>
+
+<!-- Modal for Additional Help -->
+<div id="helpModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Additional Help and Support</h2>
+        <p>If you are still having trouble, here are some extra resources to help you:</p>
+        <ul>
+            <li>Watch tutorial videos on our YouTube channel.</li>
+            <li>Visit our knowledge base for detailed articles.</li>
+            <li>Join our community forum to discuss issues with other users.</li>
+        </ul>
+    </div>
+</div>
+
+<script>
+    // FAQ data
+    const faqs = [
+        { question: "How do I track ocean data?", answer: "Go to the 'Live Data' tab to view real-time oceanographic data including tides, wave heights, and water temperatures." },
+        { question: "How do I receive weather alerts?", answer: "Enable notifications in the settings to receive real-time storm warnings and weather advisories." },
+        { question: "What if the data is not updating?", answer: "Check your internet connection and ensure that you have the latest version of the CoastalGuard app installed." },
+        { question: "How do I report an issue?", answer: "Use the contact form below to describe the issue, and our support team will assist you promptly." }
+    ];
+
+    // Dynamically insert FAQ content
+    const faqList = document.getElementById('faq-list');
+    faqs.forEach(faq => {
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${faq.question}</strong><br>${faq.answer}`;
+        faqList.appendChild(li);
+    });
+
+    // Handle form submission
+    document.getElementById('support-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        // Collect form data
+        const name = document.getElementById('name').value;
+        const email = document.getElementById('email').value;
+        const message = document.getElementById('message').value;
+
+        // Simple validation
+        if (name && email && message) {
+            alert("Thank you, " + name + "! Your message has been submitted.");
+            document.getElementById('support-form').reset();
+        } else {
+            alert("Please fill out all fields.");
+        }
+    });
+
+    // Modal functionality
+    const modal = document.getElementById('helpModal');
+    const helpBtn = document.getElementById('helpBtn');
+    const closeBtn = document.getElementsByClassName('close')[0];
+
+    // Open the modal when the user clicks the "Need More Help?" button
+    helpBtn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // Close the modal when the user clicks the "x"
+    closeBtn.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Close the modal when the user clicks anywhere outside the modal
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

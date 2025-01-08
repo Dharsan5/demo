@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coastal Guard App</title>
+  <!-- Font Awesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <!-- Leaflet CSS for Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+  <!-- Custom CSS -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+
+    /* Navbar Styling */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #333;
+      padding: 10px;
+      color: white;
+      position: relative;
+    }
+
+    .navbar-brand {
+      font-size: 24px;
+      color: white;
+      font-weight: bold;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .search-container {
+      display: flex;
+      align-items: center;
+      margin-right: 10px;
+    }
+
+    .search-input {
+      background-color: #444;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      padding: 5px 10px;
+      outline: none;
+    }
+
+    .search-icon {
+      color: white;
+      font-size: 20px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    .menu-icon {
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    /* Sidebar Styling */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100%;
+      background-color: white;
+      box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2);
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
+      z-index: 1001;
+    }
+
+    .sidebar.show {
+      transform: translateX(0);
+    }
+
+    .profile-section {
+      text-align: center;
+      padding: 20px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .profile-section i {
+      font-size: 50px;
+      color: #0066CC;
+    }
+
+    .profile-name {
+      margin-top: 10px;
+      font-size: 18px;
+    }
+
+    .menu-item {
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      color: #003366;
+      cursor: pointer;
+    }
+
+    .menu-item i {
+      margin-right: 15px;
+    }
+
+    .menu-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    /* Backdrop Styling */
+    .backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+
+    .backdrop.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* Map Styling */
+    #map {
+      height: 600px;
+      margin: 20px;
+      z-index: 999;
+    }
+
+    /* Weather Result Styling */
+    #weather-result {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 3;
+    }
+
+    /* Loading Spinner */
+    .loading {
+      font-size: 1.2em;
+      color: #0066CC;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <i class="fas fa-bars menu-icon" id="menuToggle"></i>
+    <div class="search-container">
+      <input class="search-input" type="text" id="searchInput" placeholder="Search">
+      <i class="fas fa-search search-icon" id="searchButton"></i>
+    </div>
+    <div class="navbar-brand">
+      Coastal Guard
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="profile-section">
+      <i class="fas fa-user-circle"></i>
+      <p class="profile-name">Name</p>
+    </div>
+    <a href="signup.html" class="menu-item">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Sign up</span>
+    </a>
+    <a href="login.html" class="menu-item">
+      <i class="fas fa-sign-in-alt"></i>
+      <span>Login</span>
+    </a>
+    
+    <div class="menu-item">
+      <i class="fas fa-bell"></i>
+      <span>Notification</span>
+    </div>
+    <div class="menu-item">
+      <i class="fas fa-question-circle"></i>
+      <span>Help & Support</span>
+    </div>
+    <a href="about.html" class="menu-item">
+      <i class="fas fa-info-circle"></i>
+      <span>About</span>
+    </a>
+  </div>
+
+  <!-- Backdrop -->
+  <div class="backdrop" id="backdrop"></div>
+
+  <!-- Map Container -->
+  <div id="map"></div>
+
+  <!-- Weather Result -->
+  <div id="weather-result"></div>
+
+  <!-- JavaScript for Sidebar, Map, and Weather -->
+  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const backdrop = document.getElementById('backdrop');
+    const searchButton = document.getElementById('searchButton');
+    const searchInput = document.getElementById('searchInput');
+    const weatherResult = document.getElementById('weather-result');
+    const map = L.map('map').setView([40.7128, -74.0060], 5);
+
+    let currentMarker;
+
+    // Toggle Sidebar
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('show');
+      backdrop.classList.toggle('show');
+    });
+
+    // Close Sidebar when clicking outside
+    backdrop.addEventListener('click', () => {
+      sidebar.classList.remove('show');
+      backdrop.classList.remove('show');
+    });
+
+    // Add tile layer to the map
+    L.tileLayer('https://tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=d9167a98c60f4a84b852053ec4e5ff74', {
+      attribution: '&copy; <a href="https://www.thunderforest.com/">Thunderforest</a> contributors'
+    }).addTo(map);
+
+    // Function to fetch weather data
+    async function fetchWeatherData(city) {
+      const apiKey = 'e0d7076dec2cd36a728d92ea2065d87a';
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      weatherResult.innerHTML = '<div class="loading">Loading...</div>'; // Show loading message
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        if (response.ok) {
+          weatherResult.innerHTML = `
+            <h4>Weather in ${data.name}</h4>
+            <p>Temperature: ${data.main.temp}°C</p>
+            <p>Weather: ${data.weather[0].description}</p>
+          `;
+
+          // Remove previous marker if exists
+          if (currentMarker) {
+            map.removeLayer(currentMarker);
+          }
+
+          // Add new marker for the city
+          const lat = data.coord.lat;
+          const lon = data.coord.lon;
+          currentMarker = L.marker([lat, lon]).addTo(map);
+          currentMarker.bindPopup(`
+            <strong>${data.name}</strong><br>
+            Temperature: ${data.main.temp}°C<br>
+            Weather: ${data.weather[0].description}<br>
+            Humidity: ${data.main.humidity}%<br>
+            Wind Speed: ${data.wind.speed} m/s
+          `).openPopup();
+
+          map.setView([lat, lon], 10);
+        } else {
+          weatherResult.innerHTML = `
+            <div class="error">City not found. Please try again.</div>
+          `;
+        }
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+        weatherResult.innerHTML = `
+          <div class="error">Failed to fetch weather data. Please try again later.</div>
+        `;
+      }
+    }
+
+    // Event listener for the search button
+    searchButton.addEventListener('click', () => {
+      const city = searchInput.value.trim();
+      if (city) {
+        fetchWeatherData(city);
+      }
+    });
+
+    // Trigger search on Enter key
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        searchButton.click();
+      }
+    });
+  </script>
+</body>
+</html>
